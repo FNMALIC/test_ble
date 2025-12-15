@@ -16,17 +16,13 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 
-# As Administrator or jean.dupont
+
+# Add Administrator to GRP-Formateurs group
+Add-ADGroupMember -Identity "GRP-Formateurs" -Members "Administrator"
+
+# Test access
 Test-Path "\\srv-ad-01\Formateurs"
-New-Item -Path "\\srv-ad-01\Formateurs\audit-test.txt" -ItemType File
+New-Item -Path "\\srv-ad-01\Formateurs\audit-test.txt" -ItemType File -Force
+"Test content" | Set-Content "\\srv-ad-01\Formateurs\audit-test.txt"
 Get-Content "\\srv-ad-01\Formateurs\audit-test.txt"
-Remove-Item "\\srv-ad-01\Formateurs\audit-test.txt"
-
-# Try to access as marie.martin (should fail)
-Test-Path "\\srv-ad-01\Formateurs"
-
-# View file access events
-Get-WinEvent -FilterHashtable @{LogName='Security'; ID=4663} -MaxEvents 20 | Format-Table TimeCreated, Message -Wrap
-
-# View file access attempts (including denied)
-Get-WinEvent -FilterHashtable @{LogName='Security'; ID=4656,4663,5140,5145} -MaxEvents 20
+Remove-Item "\\srv-ad-01\Formateurs\audit-test.txt" -Force

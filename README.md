@@ -16,19 +16,17 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 
-# Correct way - using enum types
-$acl = Get-Acl "C:\Partage\Formateurs"
+# As Administrator or jean.dupont
+Test-Path "\\srv-ad-01\Formateurs"
+New-Item -Path "\\srv-ad-01\Formateurs\audit-test.txt" -ItemType File
+Get-Content "\\srv-ad-01\Formateurs\audit-test.txt"
+Remove-Item "\\srv-ad-01\Formateurs\audit-test.txt"
 
-$auditRule = New-Object System.Security.AccessControl.FileSystemAuditRule(
-    "Everyone",
-    [System.Security.AccessControl.FileSystemRights]::FullControl,
-    ([System.Security.AccessControl.InheritanceFlags]::ContainerInherit -bor [System.Security.AccessControl.InheritanceFlags]::ObjectInherit),
-    [System.Security.AccessControl.PropagationFlags]::None,
-    ([System.Security.AccessControl.AuditFlags]::Success -bor [System.Security.AccessControl.AuditFlags]::Failure)
-)
+# Try to access as marie.martin (should fail)
+Test-Path "\\srv-ad-01\Formateurs"
 
-$acl.SetAuditRule($auditRule)
-Set-Acl -Path "C:\Partage\Formateurs" -AclObject $acl
+# View file access events
+Get-WinEvent -FilterHashtable @{LogName='Security'; ID=4663} -MaxEvents 20 | Format-Table TimeCreated, Message -Wrap
 
-# Verify audit settings
-(Get-Acl -Path "C:\Partage\Formateurs" -Audit).Audit | Format-Table -AutoSize
+# View file access attempts (including denied)
+Get-WinEvent -FilterHashtable @{LogName='Security'; ID=4656,4663,5140,5145} -MaxEvents 20
